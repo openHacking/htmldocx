@@ -22,9 +22,9 @@ export function generateDocx(html) {
   for (const node of doc.body.childNodes) {
     xml += traverse(node);
   }
-  xml = `<w:p><w:r><w:t>Sure, here are some of the most commonly used Markdown tags:</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Headers</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>H1</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>H2</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:t>H3</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:t>H4</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading5" /></w:pPr><w:r><w:t>H5</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading6" /></w:pPr><w:r><w:t>H6</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Emphasis</w:t></w:r></w:p><w:p><w:r><w:rPr><w:i/></w:rPr><w:t>italic</w:t><w:rPr><w:b/></w:rPr><w:t>bold</w:t><w:rPr><w:i/></w:rPr><w:rPr><w:b/></w:rPr><w:t>bold and italic</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Lists</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Unordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Ordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Links</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Images</w:t></w:r></w:p><w:p><w:r><w:t>![Alt text](image URL)</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Code</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Horizontal line</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Blockquotes</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Tables</w:t></w:r></w:p>`
-  console.info('xml-=',xml)
-  // return
+//   xml = `<w:p><w:r><w:t>Sure, here are some of the most commonly used Markdown tags:</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Headers</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>H1</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>H2</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:t>H3</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:t>H4</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading5" /></w:pPr><w:r><w:t>H5</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading6" /></w:pPr><w:r><w:t>H6</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Emphasis</w:t></w:r></w:p><w:p><w:r><w:rPr><w:i/></w:rPr><w:t>italic</w:t><w:rPr><w:b/></w:rPr><w:t>bold</w:t><w:rPr><w:i/></w:rPr><w:rPr><w:b/></w:rPr><w:t>bold and italic</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Lists</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Unordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Ordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Links</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Images</w:t></w:r></w:p><w:p><w:r><w:t>![Alt text](image URL)</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Code</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Horizontal line</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Blockquotes</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Tables</w:t></w:r></w:p>`
+  console.info('xml-===',xml)
+//   return
 
   // for (const node of doc.body.childNodes) {
   //   // 处理文本节点
@@ -121,7 +121,7 @@ export function generateDocx(html) {
 function traverse(node) {
   // 处理文本节点
   if (node.nodeType === Node.TEXT_NODE) {
-    return node.textContent.trim() === '' ? '' : `<w:t>${node.textContent}</w:t>`;
+    return node.textContent.trim() === '' ? '' : `<w:r><w:t>${node.textContent}</w:t></w:r>`;
   }
 
   // 处理加粗标签
@@ -133,7 +133,7 @@ function traverse(node) {
     for (const child of node.childNodes) {
       childrenXml += traverse(child);
     }
-    return `<w:rPr><w:b/></w:rPr>${childrenXml}`;
+    return `<w:r><w:rPr><w:b/></w:rPr>${childrenXml}</w:r>`;
   }
   // 处理斜体标签
   else if (
@@ -144,7 +144,7 @@ function traverse(node) {
     for (const child of node.childNodes) {
       childrenXml += traverse(child);
     }
-    return `<w:rPr><w:i/></w:rPr>${childrenXml}`;
+    return `<w:r><w:rPr><w:i/></w:rPr>${childrenXml}</w:r>`;
   }
 
   // 处理段落标签
@@ -153,7 +153,7 @@ function traverse(node) {
     for (const child of node.childNodes) {
       childrenXml += traverse(child);
     }
-    return `<w:p><w:r>${childrenXml}</w:r></w:p>`;
+    return `<w:p>${childrenXml}</w:p>`;
   }
 
   // 处理 H1-H6 标签
@@ -163,9 +163,26 @@ function traverse(node) {
     for (const child of node.childNodes) {
       childrenXml += traverse(child);
     }
-    return `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr><w:r>${childrenXml}</w:r></w:p>`;
+    return `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr>${childrenXml}</w:p>`;
   }
 
+  // 处理无序列表标签
+  else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "UL") {
+    let childrenXml = "";
+    for (const child of node.childNodes) {
+      childrenXml += `<w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1" /></w:numPr></w:pPr><w:r><w:t>${child.textContent}</w:t></w:r>`;
+    }
+    return childrenXml;
+  }
+
+  // 处理有序列表标签
+  else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OL") {
+    let childrenXml = "";
+    for (const [i, child] of node.childNodes.entries()) {
+      childrenXml += `<w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1" /></w:numPr></w:pPr><w:r><w:t>${i + 1}. ${child.textContent}</w:t></w:r>`;
+    }
+    return childrenXml;
+  }
   // 处理其他标签
   // ...
 
