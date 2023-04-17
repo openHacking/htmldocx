@@ -1,0 +1,19 @@
+## docx xml
+```shell
+[Content_Types].xml
+_rels
+    .rels
+docProps
+    app.xml
+    core.xml
+word
+    .rels
+        document.xml.rels
+    document.xml
+    fontTable.xml
+    settings.xml
+    styles.xml
+    theme
+        theme1.xml
+    webSettings.xml
+```
