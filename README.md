@@ -11,6 +11,7 @@ word
         document.xml.rels
     document.xml
     fontTable.xml
+    numbering.xml
     settings.xml
     styles.xml
     theme
