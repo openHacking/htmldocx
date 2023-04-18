@@ -4,282 +4,45 @@
  */
 
 // 导入jszip库
+import { escapeXML } from 'ejs';
 import JSZip from 'jszip';
 
 
 // 生成docx文件的函数
-export function generateDocx(html) {
+export class GenerateDocx {
+    constructor(html){
+        this.html = html;
 
-    // 解析 HTML 字符串为 DOM 对象
+        this.hyperlinkXML = ``;
+        this.hyperlinkId = 8;
+        this.init()
+    }
+
+    init(){
+
+        // 解析 HTML 字符串为 DOM 对象
     const parser = new DOMParser();
-    const doc = parser.parseFromString(html, "text/html");
+    const doc = parser.parseFromString(this.html, "text/html");
 
     // 创建一个新的JSZip实例
     const zip = new JSZip();
 
-    let xml = ``;
-
+      let xml = ``;
+      
     for (const node of doc.body.childNodes) {
-        xml += traverse(node);
+        xml += this.traverse(node);
     }
 
-    xml += `<w:p w14:paraId="1BED87A6" w14:textId="4A8F2927" w:rsidR="00225EF9" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="1"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t>1</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="68808E9A" w14:textId="50FC3659" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="1"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t>2</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="19605FF7" w14:textId="6B955467" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="1"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t>3</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="17AA0940" w14:textId="77777777" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79"/>
-<w:p w14:paraId="5FF3CB9A" w14:textId="5800F132" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="2"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"> list</w:t>
-    </w:r>
-    <w:r>
-        <w:t>1</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="26D6CEF4" w14:textId="3E48ECF8" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="2"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"> list</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"></w:t>
-    </w:r>
-    <w:r>
-        <w:t>2</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="10DD6F7D" w14:textId="39650FD8" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="2"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-    </w:pPr>
-    <w:r>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>tem</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"> list</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"></w:t>
-    </w:r>
-    <w:r>
-        <w:t>3</w:t>
-    </w:r>
-</w:p>
-<w:p w14:paraId="71E940C0" w14:textId="4AA7801E" w:rsidR="00876A79" w:rsidRDefault="00876A79" w:rsidP="00876A79">
-    <w:pPr>
-        <w:pStyle w:val="a3"/>
-        <w:numPr>
-            <w:ilvl w:val="0"/>
-            <w:numId w:val="2"/>
-        </w:numPr>
-        <w:ind w:firstLineChars="0"/>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-    </w:pPr>
-    <w:proofErr w:type="spellStart"/>
-    <w:r>
-        <w:rPr>
-            <w:rFonts w:hint="eastAsia"/>
-        </w:rPr>
-        <w:t>I</w:t>
-    </w:r>
-    <w:r>
-        <w:t>tme</w:t>
-    </w:r>
-    <w:proofErr w:type="spellEnd"/>
-    <w:r>
-        <w:t xml:space="preserve"> list</w:t>
-    </w:r>
-    <w:r>
-        <w:t xml:space="preserve"> 4</w:t>
-    </w:r>
-</w:p>`
-    //   xml = `<w:p><w:r><w:t>Sure, here are some of the most commonly used Markdown tags:</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Headers</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>H1</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>H2</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading3" /></w:pPr><w:r><w:t>H3</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading4" /></w:pPr><w:r><w:t>H4</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading5" /></w:pPr><w:r><w:t>H5</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading6" /></w:pPr><w:r><w:t>H6</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Emphasis</w:t></w:r></w:p><w:p><w:r><w:rPr><w:i/></w:rPr><w:t>italic</w:t><w:rPr><w:b/></w:rPr><w:t>bold</w:t><w:rPr><w:i/></w:rPr><w:rPr><w:b/></w:rPr><w:t>bold and italic</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Lists</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Unordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading2" /></w:pPr><w:r><w:t>Ordered list</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Links</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Images</w:t></w:r></w:p><w:p><w:r><w:t>![Alt text](image URL)</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Code</w:t></w:r></w:p><w:p><w:r></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Horizontal line</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Blockquotes</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Heading1" /></w:pPr><w:r><w:t>Tables</w:t></w:r></w:p>`
+    // <w:br/><w:t xml:space="preserve">                  c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})</w:t><w:br/><w:t xml:space="preserve">                  return</w:t><w:br/><w:t xml:space="preserve">              }</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">              // Handle the event based on its type</w:t><w:br/><w:t xml:space="preserve">              switch event.Type {</w:t><w:br/><w:t xml:space="preserve">              case "test":</w:t><w:br/><w:t xml:space="preserve">                  fmt.Println("Received test event")</w:t><w:br/><w:t xml:space="preserve">              default:</w:t><w:br/><w:t xml:space="preserve">                  fmt.Println("Received unknown event type:", event.Type)</w:t><w:br/><w:t xml:space="preserve">              }</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">              // Send a 2xx response status code to indicate success</w:t><w:br/><w:t xml:space="preserve">              c.JSON(http.StatusOK, gin.H{})</w:t><w:br/><w:t xml:space="preserve">          })</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">          // Start the server</w:t><w:br/><w:t xml:space="preserve">          if err := router.Run(":8080"); err != nil {</w:t><w:br/><w:t xml:space="preserve">              panic(err)</w:t><w:br/><w:t xml:space="preserve">          }</w:t><w:br/><w:t xml:space="preserve">      }</w:t><w:br/><w:t xml:space="preserve">blank</w:t>
     console.info('xml-===', xml)
     //   return
-
-    // for (const node of doc.body.childNodes) {
-    //   // 处理文本节点
-    //   if (node.nodeType === Node.TEXT_NODE) {
-    //     xml += `<w:p><w:r><w:t>${node.textContent}</w:t></w:r></w:p>`;
-    //   }
-
-    //   // 处理加粗标签
-    //   else if (node.nodeType === Node.ELEMENT_NODE && (node.nodeName === "STRONG" || node.nodeName === "B")) {
-    //     xml += `<w:p><w:r>`;
-    //     for (const child of node.childNodes) {
-    //       if (child.nodeType === Node.TEXT_NODE) {
-    //         xml += `<w:rPr><w:b/></w:rPr><w:t>${child.textContent}</w:t>`;
-    //       }
-    //     }
-    //     xml += `</w:r></w:p>`;
-    //   }
-
-    //   // 处理斜体标签
-    //   else if (node.nodeType === Node.ELEMENT_NODE && (node.nodeName === "EM" || node.nodeName === "I")) {
-    //     xml += `<w:p><w:r>`;
-    //     for (const child of node.childNodes) {
-    //       if (child.nodeType === Node.TEXT_NODE) {
-    //         xml += `<w:rPr><w:i/></w:rPr><w:t>${child.textContent}</w:t>`;
-    //       }
-    //     }
-    //     xml += `</w:r></w:p>`;
-    //   }
-
-    //   // 处理段落标签
-    //   else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "P") {
-    //     xml += `<w:p><w:r>`;
-    //     for (const child of node.childNodes) {
-    //       if (child.nodeType === Node.TEXT_NODE) {
-    //         xml += `<w:t>${child.textContent}</w:t>`;
-    //       } else if (
-    //         child.nodeType === Node.ELEMENT_NODE &&
-    //         child.nodeName === "STRONG"
-    //       ) {
-    //         for (const grandchild of child.childNodes) {
-    //           if (grandchild.nodeType === Node.TEXT_NODE) {
-    //             xml += `<w:rPr><w:b/></w:rPr><w:t>${grandchild.textContent}</w:t>`;
-    //           }
-    //         }
-    //       }
-    //       // 处理其他标签
-    //       // ...
-    //     }
-    //     xml += `</w:r></w:p>`;
-    //   }
-
-
-    //   // 处理 H1-H6 标签
-    //   else if (node.nodeType === Node.ELEMENT_NODE && /^H[1-6]$/.test(node.nodeName)) {
-    //     const headingLevel = node.nodeName.substring(1);
-    //     xml += `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr><w:r><w:t>`;
-    //     for (const child of node.childNodes) {
-    //       if (child.nodeType === Node.TEXT_NODE) {
-    //         xml += `${child.textContent}`;
-    //       }
-    //     }
-    //     xml += `</w:t></w:r></w:p>`;
-    //   }
-
-
-
-    //   // 处理其他标签
-    //   // ...
-
-    // }
 
     // 将构建的xml字符串添加到JSZip实例中
     setContentTypes(zip)
     setRels(zip)
+    setCustomXml(zip)
     setDocProps(zip)
-    setWord(zip, xml)
+    setWord(zip, xml,this.hyperlinkXML)
 
 
     // 将生成的docx文件下载到本地
@@ -295,110 +58,184 @@ export function generateDocx(html) {
             window.URL.revokeObjectURL(url);
         }, 0);
     });
+
+    }
+
+    traverse(node) {
+        // 处理文本节点
+        if (node.nodeType === Node.TEXT_NODE || node.nodeName === "LI") {
+            return node.textContent.trim() === '' ? '' : `<w:r><w:t>${node.textContent}</w:t></w:r>`;
+        }
+    
+        // 处理加粗标签
+        else if (
+            node.nodeType === Node.ELEMENT_NODE &&
+            (node.nodeName === "STRONG" || node.nodeName === "B")
+        ) {
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child);
+            }
+            return `<w:r><w:rPr><w:b/></w:rPr>${childrenXml}</w:r>`;
+        }
+        // 处理斜体标签
+        else if (
+            node.nodeType === Node.ELEMENT_NODE &&
+            (node.nodeName === "EM" || node.nodeName === "I")
+        ) {
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child);
+            }
+            return `<w:r><w:rPr><w:i/></w:rPr>${childrenXml}</w:r>`;
+        }
+    
+        // 处理段落标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "P") {
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child);
+            }
+            return `<w:p>${childrenXml}</w:p>`;
+        }
+        // 处理链接标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "A") {
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child);
+            }
+            const rId = `rId${this.hyperlinkId++}`
+            this.hyperlinkXML += `<Relationship Id="${rId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink" Target="https://chatopenai.pro/" TargetMode="External"/>`
+            return `<w:hyperlink r:id="${rId}" w:history="1">
+                        <w:r>
+                            <w:rPr>
+                                <w:rStyle w:val="Hyperlink"/>
+                            </w:rPr>
+                            ${childrenXml}
+                        </w:r>
+                    </w:hyperlink>`;
+        }
+    
+        // 处理 H1-H6 标签
+        else if (node.nodeType === Node.ELEMENT_NODE && /^H[1-6]$/.test(node.nodeName)) {
+            const headingLevel = node.nodeName.substring(1);
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child);
+            }
+            return `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr>${childrenXml}</w:p>`;
+        }
+    
+        // 处理无序列表标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "UL") {
+            let childrenXml = "";
+            const childNodes = Array.from(node.childNodes).filter(n => n.nodeName === 'LI')
+            for (const child of childNodes) {   
+                childrenXml += `<w:p><w:pPr>
+                <w:pStyle w:val="ListParagraph"/>
+                <w:numPr>
+                    <w:ilvl w:val="0"/>
+                    <w:numId w:val="5"/>
+                </w:numPr>
+                <w:ind w:firstLineChars="0"/>
+            </w:pPr>${this.traverse(child)}</w:p>`;
+            }
+            return childrenXml;
+        }
+    
+        // 处理有序列表标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OL") {
+            let childrenXml = "";
+            const childNodes = Array.from(node.childNodes).filter(n => n.nodeName === 'LI')
+            for (const child of childNodes) {   
+                childrenXml += `<w:p><w:pPr>
+                <w:pStyle w:val="ListParagraph"/>
+                <w:numPr>
+                    <w:ilvl w:val="0"/>
+                    <w:numId w:val="6"/>
+                </w:numPr>
+                <w:ind w:firstLineChars="0"/>
+            </w:pPr>${this.traverse(child)}</w:p>`;
+            }
+            return childrenXml;
+        }
+        // 处理有代码块标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "PRE") {
+            // const t = `第1行&#10;第2行&#10;第3行&#10;第4行`
+
+            let childrenXml = node.innerText.split('\n').map(str => `<w:t xml:space="preserve">${escapeXML(str)}</w:t>`).join('<w:br/>')
+            return `<w:p><w:r>${childrenXml}</w:r></w:p>`
+            // return `<w:p><w:r><w:t xml:space="preserve">${node.innerText.replace(/\n/g, '&#10;')}</w:t></w:r></w:p>`
+        }
+    
+        // 处理其他标签
+        // ...
+    
+        return "";
+    }
+    
 }
 
-function traverse(node) {
-    // 处理文本节点
-    if (node.nodeType === Node.TEXT_NODE) {
-        return node.textContent.trim() === '' ? '' : `<w:r><w:t>${node.textContent}</w:t></w:r>`;
-    }
 
-    // 处理加粗标签
-    else if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node.nodeName === "STRONG" || node.nodeName === "B")
-    ) {
-        let childrenXml = "";
-        for (const child of node.childNodes) {
-            childrenXml += traverse(child);
-        }
-        return `<w:r><w:rPr><w:b/></w:rPr>${childrenXml}</w:r>`;
-    }
-    // 处理斜体标签
-    else if (
-        node.nodeType === Node.ELEMENT_NODE &&
-        (node.nodeName === "EM" || node.nodeName === "I")
-    ) {
-        let childrenXml = "";
-        for (const child of node.childNodes) {
-            childrenXml += traverse(child);
-        }
-        return `<w:r><w:rPr><w:i/></w:rPr>${childrenXml}</w:r>`;
-    }
-
-    // 处理段落标签
-    else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "P") {
-        let childrenXml = "";
-        for (const child of node.childNodes) {
-            childrenXml += traverse(child);
-        }
-        return `<w:p>${childrenXml}</w:p>`;
-    }
-
-    // 处理 H1-H6 标签
-    else if (node.nodeType === Node.ELEMENT_NODE && /^H[1-6]$/.test(node.nodeName)) {
-        const headingLevel = node.nodeName.substring(1);
-        let childrenXml = "";
-        for (const child of node.childNodes) {
-            childrenXml += traverse(child);
-        }
-        return `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr>${childrenXml}</w:p>`;
-    }
-
-    // 处理无序列表标签
-    else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "UL") {
-        let childrenXml = "";
-        for (const child of node.childNodes) {
-            childrenXml += `<w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1" /></w:numPr></w:pPr><w:r><w:t>${child.textContent}</w:t></w:r>`;
-        }
-        return childrenXml;
-    }
-
-    // 处理有序列表标签
-    else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OL") {
-        let childrenXml = "";
-        for (const [i, child] of node.childNodes.entries()) {
-            childrenXml += `<w:pPr><w:numPr><w:ilvl w:val="0" /><w:numId w:val="1" /></w:numPr></w:pPr><w:r><w:t>${i + 1}. ${child.textContent}</w:t></w:r>`;
-        }
-        return childrenXml;
-    }
-    // 处理其他标签
-    // ...
-
-    return "";
-}
 
 function setContentTypes(zip) {
     // 构建docx所需的xml字符串
     const contentTypesXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-   <Types
-       xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-       <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-       <Default Extension="xml" ContentType="application/xml"/>
-       <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
-       <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
-       <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
-       <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
-       <Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/>
-       <Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/>
-       <Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
-       <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
-       <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
-   </Types>`;
+    <Types
+        xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+        <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+        <Default Extension="xml" ContentType="application/xml"/>
+        <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+        <Override PartName="/customXml/itemProps1.xml" ContentType="application/vnd.openxmlformats-officedocument.customXmlProperties+xml"/>
+        <Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/>
+        <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+        <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+        <Override PartName="/word/webSettings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml"/>
+        <Override PartName="/word/fontTable.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"/>
+        <Override PartName="/word/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>
+        <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+        <Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>
+    </Types>`;
 
     zip.file('[Content_Types].xml', contentTypesXml);
 }
 
 function setRels(zip) {
     const relsXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <Relationships
-      xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-      <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
-      <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
-      <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
-  </Relationships>`;
+    <Relationships
+        xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+        <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>
+        <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+        <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+    </Relationships>`;
 
     zip.folder('_rels').file('.rels', relsXml);
+}
+
+function setCustomXml(zip) {
+    const item1XMLRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <Relationships
+        xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+        <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXmlProps" Target="itemProps1.xml"/>
+    </Relationships>`
+    const item1XML = `<?xml version="1.0" standalone="no"?>
+    <b:Sources
+        xmlns:b="http://schemas.openxmlformats.org/officeDocument/2006/bibliography"
+        xmlns="http://schemas.openxmlformats.org/officeDocument/2006/bibliography" SelectedStyle="\APASixthEditionOfficeOnline.xsl" StyleName="APA" Version="6">
+    </b:Sources>`
+    const itemProps1XML = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+    <ds:datastoreItem ds:itemID="{52C8F2C5-85D6-4A2B-9C2B-0C7D136F0F1F}"
+        xmlns:ds="http://schemas.openxmlformats.org/officeDocument/2006/customXml">
+        <ds:schemaRefs>
+            <ds:schemaRef ds:uri="http://schemas.openxmlformats.org/officeDocument/2006/bibliography"/>
+        </ds:schemaRefs>
+    </ds:datastoreItem>`
+
+    const customXml = zip.folder('customXml')
+    customXml.folder('_rels').file('item1.xml.rels', item1XMLRels);
+    customXml.file('item1.xml', item1XML);
+    customXml.file('itemProps1.xml', itemProps1XML);
+    
 }
 
 function setDocProps(zip,
@@ -409,26 +246,41 @@ function setDocProps(zip,
     const docProps = zip.folder('docProps');
 
     docProps.file('app.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <Properties
-      xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
-      xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
-      <Template>Normal.dotm</Template>
-      <TotalTime>0</TotalTime>
-      <Pages>1</Pages>
-      <Words>0</Words>
-      <Characters>${charCount}</Characters>
-      <Application>Microsoft Office Word</Application>
-      <DocSecurity>0</DocSecurity>
-      <Lines>1</Lines>
-      <Paragraphs>${pCount}</Paragraphs>
-      <ScaleCrop>false</ScaleCrop>
-      <Company></Company>
-      <LinksUpToDate>false</LinksUpToDate>
-      <CharactersWithSpaces>${charSpaceCount}</CharactersWithSpaces>
-      <SharedDoc>false</SharedDoc>
-      <HyperlinksChanged>false</HyperlinksChanged>
-      <AppVersion>16.0000</AppVersion>
-  </Properties>`);
+    <Properties
+        xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"
+        xmlns:vt="http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes">
+        <Template>Normal.dotm</Template>
+        <TotalTime>81</TotalTime>
+        <Pages>3</Pages>
+        <Words>105</Words>
+        <Characters>${charCount}</Characters>
+        <Application>Microsoft Office Word</Application>
+        <DocSecurity>0</DocSecurity>
+        <Lines>5</Lines>
+        <Paragraphs>${pCount}</Paragraphs>
+        <ScaleCrop>false</ScaleCrop>
+        <HeadingPairs>
+            <vt:vector size="2" baseType="variant">
+                <vt:variant>
+                    <vt:lpstr>Title</vt:lpstr>
+                </vt:variant>
+                <vt:variant>
+                    <vt:i4>1</vt:i4>
+                </vt:variant>
+            </vt:vector>
+        </HeadingPairs>
+        <TitlesOfParts>
+            <vt:vector size="1" baseType="lpstr">
+                <vt:lpstr></vt:lpstr>
+            </vt:vector>
+        </TitlesOfParts>
+        <Company></Company>
+        <LinksUpToDate>false</LinksUpToDate>
+        <CharactersWithSpaces>${charSpaceCount}</CharactersWithSpaces>
+        <SharedDoc>false</SharedDoc>
+        <HyperlinksChanged>false</HyperlinksChanged>
+        <AppVersion>16.0000</AppVersion>
+    </Properties>`);
 
     docProps.file('core.xml', `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   <cp:coreProperties
@@ -447,21 +299,21 @@ function setDocProps(zip,
       <dcterms:created xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:created>
       <dcterms:modified xsi:type="dcterms:W3CDTF">${new Date().toISOString()}</dcterms:modified>
   </cp:coreProperties>`);
-
-
 }
 
-function setWord(zip, xml) {
+function setWord(zip, xml,hyperlinkXML) {
     const wordRelsXML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-  <Relationships
-      xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-      <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
-      <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
-      <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
-      <Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
-      <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
-      <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
-  </Relationships>`
+    <Relationships
+        xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+        <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml" Target="../customXml/item1.xml"/>
+        <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering" Target="numbering.xml"/>
+        <Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+        <Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+        <Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings" Target="webSettings.xml"/>
+        <Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable" Target="fontTable.xml"/>
+        <Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>
+        ${hyperlinkXML}
+    </Relationships>`
 
     const documentXML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <w:document
@@ -510,41 +362,6 @@ function setWord(zip, xml) {
         </w:body>
     </w:document>`
 
-    const fontTableXML_windows = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-    <w:fonts
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"
-        xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"
-        xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml"
-        xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml"
-        xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex"
-        xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid"
-        xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml"
-        xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash"
-        xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh">
-        <w:font w:name="等线">
-            <w:altName w:val="DengXian"/>
-            <w:panose1 w:val="02010600030101010101"/>
-            <w:charset w:val="86"/>
-            <w:family w:val="auto"/>
-            <w:pitch w:val="variable"/>
-            <w:sig w:usb0="A00002BF" w:usb1="38CF7CFA" w:usb2="00000016" w:usb3="00000000" w:csb0="0004000F" w:csb1="00000000"/>
-        </w:font>
-        <w:font w:name="Times New Roman">
-            <w:panose1 w:val="02020603050405020304"/>
-            <w:charset w:val="00"/>
-            <w:family w:val="roman"/>
-            <w:pitch w:val="variable"/>
-            <w:sig w:usb0="E0002EFF" w:usb1="C000785B" w:usb2="00000009" w:usb3="00000000" w:csb0="000001FF" w:csb1="00000000"/>
-        </w:font>
-        <w:font w:name="等线 Light">
-            <w:panose1 w:val="02010600030101010101"/>
-            <w:charset w:val="86"/>
-            <w:family w:val="auto"/>
-            <w:pitch w:val="variable"/>
-            <w:sig w:usb0="A00002BF" w:usb1="38CF7CFA" w:usb2="00000016" w:usb3="00000000" w:csb0="0004000F" w:csb1="00000000"/>
-        </w:font>
-    </w:fonts>`
     const fontTableXML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <w:fonts
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -557,6 +374,13 @@ function setWord(zip, xml) {
         xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml"
         xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash"
         xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh">
+        <w:font w:name="Wingdings">
+            <w:panose1 w:val="05000000000000000000"/>
+            <w:charset w:val="02"/>
+            <w:family w:val="auto"/>
+            <w:pitch w:val="variable"/>
+            <w:sig w:usb0="00000000" w:usb1="10000000" w:usb2="00000000" w:usb3="00000000" w:csb0="80000000" w:csb1="00000000"/>
+        </w:font>
         <w:font w:name="Times New Roman">
             <w:panose1 w:val="02020603050405020304"/>
             <w:charset w:val="00"/>
@@ -564,15 +388,8 @@ function setWord(zip, xml) {
             <w:pitch w:val="variable"/>
             <w:sig w:usb0="E0002EFF" w:usb1="C000785B" w:usb2="00000009" w:usb3="00000000" w:csb0="000001FF" w:csb1="00000000"/>
         </w:font>
-        <w:font w:name="Wingdings">
-            <w:panose1 w:val="05000000000000000000"/>
-            <w:charset w:val="00"/>
-            <w:family w:val="decorative"/>
-            <w:pitch w:val="variable"/>
-            <w:sig w:usb0="00000003" w:usb1="00000000" w:usb2="00000000" w:usb3="00000000" w:csb0="80000001" w:csb1="00000000"/>
-        </w:font>
-        <w:font w:name="DengXian">
-            <w:altName w:val="等线"/>
+        <w:font w:name="等线">
+            <w:altName w:val="DengXian"/>
             <w:panose1 w:val="02010600030101010101"/>
             <w:charset w:val="86"/>
             <w:family w:val="auto"/>
@@ -585,6 +402,21 @@ function setWord(zip, xml) {
             <w:family w:val="auto"/>
             <w:pitch w:val="variable"/>
             <w:sig w:usb0="A00002BF" w:usb1="38CF7CFA" w:usb2="00000016" w:usb3="00000000" w:csb0="0004000F" w:csb1="00000000"/>
+        </w:font>
+        <w:font w:name="Consolas">
+            <w:panose1 w:val="020B0609020204030204"/>
+            <w:charset w:val="00"/>
+            <w:family w:val="modern"/>
+            <w:pitch w:val="fixed"/>
+            <w:sig w:usb0="E00006FF" w:usb1="0000FCFF" w:usb2="00000001" w:usb3="00000000" w:csb0="0000019F" w:csb1="00000000"/>
+        </w:font>
+        <w:font w:name="宋体">
+            <w:altName w:val="SimSun"/>
+            <w:panose1 w:val="02010600030101010101"/>
+            <w:charset w:val="86"/>
+            <w:family w:val="auto"/>
+            <w:pitch w:val="variable"/>
+            <w:sig w:usb0="00000203" w:usb1="288F0000" w:usb2="00000016" w:usb3="00000000" w:csb0="00040001" w:csb1="00000000"/>
         </w:font>
     </w:fonts>`
 
@@ -625,9 +457,9 @@ function setWord(zip, xml) {
         xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml"
         xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14">
         <w:abstractNum w:abstractNumId="0" w15:restartNumberingAfterBreak="0">
-            <w:nsid w:val="06104C06"/>
+            <w:nsid w:val="001A0BFA"/>
             <w:multiLevelType w:val="hybridMultilevel"/>
-            <w:tmpl w:val="9FA4DBCE"/>
+            <w:tmpl w:val="38940A6A"/>
             <w:lvl w:ilvl="0" w:tplc="0409000F">
                 <w:start w:val="1"/>
                 <w:numFmt w:val="decimal"/>
@@ -636,8 +468,94 @@ function setWord(zip, xml) {
                 <w:pPr>
                     <w:ind w:left="440" w:hanging="440"/>
                 </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="1" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%2)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="880" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="2" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%3."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="1320" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="3" w:tplc="0409000F" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="decimal"/>
+                <w:lvlText w:val="%4."/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1760" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="4" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%5)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2200" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="5" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%6."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="2640" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="6" w:tplc="0409000F" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="decimal"/>
+                <w:lvlText w:val="%7."/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3080" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="7" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%8)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3520" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="8" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%9."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="3960" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+        </w:abstractNum>
+        <w:abstractNum w:abstractNumId="1" w15:restartNumberingAfterBreak="0">
+            <w:nsid w:val="00526A78"/>
+            <w:multiLevelType w:val="hybridMultilevel"/>
+            <w:tmpl w:val="7208F61E"/>
+            <w:lvl w:ilvl="0" w:tplc="04090001">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="360" w:hanging="360"/>
+                </w:pPr>
                 <w:rPr>
-                    <w:rFonts w:hint="default"/>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
                 </w:rPr>
             </w:lvl>
             <w:lvl w:ilvl="1" w:tplc="FFFFFFFF" w:tentative="1">
@@ -737,10 +655,10 @@ function setWord(zip, xml) {
                 </w:rPr>
             </w:lvl>
         </w:abstractNum>
-        <w:abstractNum w:abstractNumId="1" w15:restartNumberingAfterBreak="0">
-            <w:nsid w:val="06B61D7C"/>
+        <w:abstractNum w:abstractNumId="2" w15:restartNumberingAfterBreak="0">
+            <w:nsid w:val="1D4E5DBB"/>
             <w:multiLevelType w:val="hybridMultilevel"/>
-            <w:tmpl w:val="9B6E33E0"/>
+            <w:tmpl w:val="4D60F5C6"/>
             <w:lvl w:ilvl="0" w:tplc="04090001">
                 <w:start w:val="1"/>
                 <w:numFmt w:val="bullet"/>
@@ -850,11 +768,333 @@ function setWord(zip, xml) {
                 </w:rPr>
             </w:lvl>
         </w:abstractNum>
-        <w:num w:numId="1" w16cid:durableId="430901431">
+        <w:abstractNum w:abstractNumId="3" w15:restartNumberingAfterBreak="0">
+            <w:nsid w:val="2AAE0370"/>
+            <w:multiLevelType w:val="hybridMultilevel"/>
+            <w:tmpl w:val="0990486A"/>
+            <w:lvl w:ilvl="0" w:tplc="B26A3C2E">
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val="-"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="360" w:hanging="360"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="等线" w:eastAsia="等线" w:hAnsi="等线" w:cstheme="minorBidi" w:hint="eastAsia"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="1" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="880" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="2" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1320" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="3" w:tplc="04090001" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1760" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="4" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2200" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="5" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2640" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="6" w:tplc="04090001" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3080" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="7" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3520" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="8" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3960" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+        </w:abstractNum>
+        <w:abstractNum w:abstractNumId="4" w15:restartNumberingAfterBreak="0">
+            <w:nsid w:val="2FF806E6"/>
+            <w:multiLevelType w:val="hybridMultilevel"/>
+            <w:tmpl w:val="6D6C5D12"/>
+            <w:lvl w:ilvl="0" w:tplc="90663F8A">
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val="-"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="360" w:hanging="360"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="等线" w:eastAsia="等线" w:hAnsi="等线" w:cstheme="minorBidi" w:hint="eastAsia"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="1" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="880" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="2" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1320" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="3" w:tplc="04090001" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1760" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="4" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2200" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="5" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2640" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="6" w:tplc="04090001" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3080" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="7" w:tplc="04090003" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3520" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+            <w:lvl w:ilvl="8" w:tplc="04090005" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="bullet"/>
+                <w:lvlText w:val=""/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3960" w:hanging="440"/>
+                </w:pPr>
+                <w:rPr>
+                    <w:rFonts w:ascii="Wingdings" w:hAnsi="Wingdings" w:hint="default"/>
+                </w:rPr>
+            </w:lvl>
+        </w:abstractNum>
+        <w:abstractNum w:abstractNumId="5" w15:restartNumberingAfterBreak="0">
+            <w:nsid w:val="6D52303C"/>
+            <w:multiLevelType w:val="hybridMultilevel"/>
+            <w:tmpl w:val="55F8986A"/>
+            <w:lvl w:ilvl="0" w:tplc="0409000F">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="decimal"/>
+                <w:lvlText w:val="%1."/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="440" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="1" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%2)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="880" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="2" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%3."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="1320" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="3" w:tplc="0409000F" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="decimal"/>
+                <w:lvlText w:val="%4."/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="1760" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="4" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%5)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="2200" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="5" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%6."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="2640" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="6" w:tplc="0409000F" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="decimal"/>
+                <w:lvlText w:val="%7."/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3080" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="7" w:tplc="04090019" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerLetter"/>
+                <w:lvlText w:val="%8)"/>
+                <w:lvlJc w:val="left"/>
+                <w:pPr>
+                    <w:ind w:left="3520" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+            <w:lvl w:ilvl="8" w:tplc="0409001B" w:tentative="1">
+                <w:start w:val="1"/>
+                <w:numFmt w:val="lowerRoman"/>
+                <w:lvlText w:val="%9."/>
+                <w:lvlJc w:val="right"/>
+                <w:pPr>
+                    <w:ind w:left="3960" w:hanging="440"/>
+                </w:pPr>
+            </w:lvl>
+        </w:abstractNum>
+        <w:num w:numId="1" w16cid:durableId="1197740206">
+            <w:abstractNumId w:val="2"/>
+        </w:num>
+        <w:num w:numId="2" w16cid:durableId="1409569620">
+            <w:abstractNumId w:val="0"/>
+        </w:num>
+        <w:num w:numId="3" w16cid:durableId="1548879684">
+            <w:abstractNumId w:val="3"/>
+        </w:num>
+        <w:num w:numId="4" w16cid:durableId="1014529958">
+            <w:abstractNumId w:val="4"/>
+        </w:num>
+        <w:num w:numId="5" w16cid:durableId="1206602628">
             <w:abstractNumId w:val="1"/>
         </w:num>
-        <w:num w:numId="2" w16cid:durableId="1358460400">
-            <w:abstractNumId w:val="0"/>
+        <w:num w:numId="6" w16cid:durableId="1019888690">
+            <w:abstractNumId w:val="5"/>
         </w:num>
     </w:numbering>`
 
@@ -878,7 +1118,7 @@ function setWord(zip, xml) {
         <w:zoom w:percent="100"/>
         <w:bordersDoNotSurroundHeader/>
         <w:bordersDoNotSurroundFooter/>
-        <w:proofState w:grammar="clean"/>
+        <w:proofState w:spelling="clean" w:grammar="clean"/>
         <w:defaultTabStop w:val="420"/>
         <w:drawingGridVerticalSpacing w:val="156"/>
         <w:displayHorizontalDrawingGridEvery w:val="0"/>
@@ -900,9 +1140,17 @@ function setWord(zip, xml) {
             <w:compatSetting w:name="useWord2013TrackBottomHyphenation" w:uri="http://schemas.microsoft.com/office/word" w:val="0"/>
         </w:compat>
         <w:rsids>
-            <w:rsidRoot w:val="00DE143E"/>
-            <w:rsid w:val="009F7532"/>
-            <w:rsid w:val="00DE143E"/>
+            <w:rsidRoot w:val="00D561EF"/>
+            <w:rsid w:val="00145D17"/>
+            <w:rsid w:val="00432CFF"/>
+            <w:rsid w:val="00776EE0"/>
+            <w:rsid w:val="007F6D62"/>
+            <w:rsid w:val="0081448F"/>
+            <w:rsid w:val="008F028D"/>
+            <w:rsid w:val="009E133E"/>
+            <w:rsid w:val="00BC210D"/>
+            <w:rsid w:val="00CA0062"/>
+            <w:rsid w:val="00D561EF"/>
         </w:rsids>
         <m:mathPr>
             <m:mathFont m:val="Cambria Math"/>
@@ -927,9 +1175,9 @@ function setWord(zip, xml) {
         </w:shapeDefaults>
         <w:decimalSymbol w:val="."/>
         <w:listSeparator w:val=","/>
-        <w14:docId w14:val="1C23AE55"/>
+        <w14:docId w14:val="0F86C403"/>
         <w15:chartTrackingRefBased/>
-        <w15:docId w15:val="{EB32034E-C7EB-45E9-87EE-E1406F519F7D}"/>
+        <w15:docId w15:val="{459ECC98-089E-4F6E-BFC2-4C8913AFEFCE}"/>
     </w:settings>`
 
     const Normal = `<w:style w:type="paragraph" w:default="1" w:styleId="Normal">
@@ -1289,6 +1537,71 @@ function setWord(zip, xml) {
     <w:color w:val="404040" w:themeColor="text1" w:themeTint="BF"/>
 </w:rPr>
 </w:style>`
+    const Hyperlink = `<w:style w:type="character" w:styleId="Hyperlink">
+    <w:name w:val="Hyperlink"/>
+    <w:basedOn w:val="DefaultParagraphFont"/>
+    <w:uiPriority w:val="99"/>
+    <w:unhideWhenUsed/>
+    <w:rsid w:val="00776EE0"/>
+    <w:rPr>
+        <w:color w:val="0563C1" w:themeColor="hyperlink"/>
+        <w:u w:val="single"/>
+    </w:rPr>
+</w:style>`
+    const GridTable1Light = `<w:style w:type="table" w:styleId="GridTable1Light">
+    <w:name w:val="Grid Table 1 Light"/>
+    <w:basedOn w:val="TableNormal"/>
+    <w:uiPriority w:val="46"/>
+    <w:rsid w:val="009E133E"/>
+    <w:tblPr>
+        <w:tblStyleRowBandSize w:val="1"/>
+        <w:tblStyleColBandSize w:val="1"/>
+        <w:tblBorders>
+            <w:top w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+            <w:left w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+            <w:bottom w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+            <w:right w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+            <w:insideH w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+            <w:insideV w:val="single" w:sz="4" w:space="0" w:color="999999" w:themeColor="text1" w:themeTint="66"/>
+        </w:tblBorders>
+    </w:tblPr>
+    <w:tblStylePr w:type="firstRow">
+        <w:rPr>
+            <w:b/>
+            <w:bCs/>
+        </w:rPr>
+        <w:tblPr/>
+        <w:tcPr>
+            <w:tcBorders>
+                <w:bottom w:val="single" w:sz="12" w:space="0" w:color="666666" w:themeColor="text1" w:themeTint="99"/>
+            </w:tcBorders>
+        </w:tcPr>
+    </w:tblStylePr>
+    <w:tblStylePr w:type="lastRow">
+        <w:rPr>
+            <w:b/>
+            <w:bCs/>
+        </w:rPr>
+        <w:tblPr/>
+        <w:tcPr>
+            <w:tcBorders>
+                <w:top w:val="double" w:sz="2" w:space="0" w:color="666666" w:themeColor="text1" w:themeTint="99"/>
+            </w:tcBorders>
+        </w:tcPr>
+    </w:tblStylePr>
+    <w:tblStylePr w:type="firstCol">
+        <w:rPr>
+            <w:b/>
+            <w:bCs/>
+        </w:rPr>
+    </w:tblStylePr>
+    <w:tblStylePr w:type="lastCol">
+        <w:rPr>
+            <w:b/>
+            <w:bCs/>
+        </w:rPr>
+    </w:tblStylePr>
+</w:style>`
 
     const DefaultParagraphFont = ` <w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont">
 <w:name w:val="Default Paragraph Font"/>
@@ -1319,6 +1632,16 @@ function setWord(zip, xml) {
 <w:uiPriority w:val="99"/>
 <w:semiHidden/>
 <w:unhideWhenUsed/>
+</w:style>`
+    const ListParagraph = `<w:style w:type="paragraph" w:styleId="ListParagraph">
+    <w:name w:val="List Paragraph"/>
+    <w:basedOn w:val="Normal"/>
+    <w:uiPriority w:val="34"/>
+    <w:qFormat/>
+    <w:rsid w:val="008F028D"/>
+    <w:pPr>
+        <w:ind w:firstLineChars="200" w:firstLine="420"/>
+    </w:pPr>
 </w:style>`
 
 
@@ -1742,6 +2065,7 @@ function setWord(zip, xml) {
         ${DefaultParagraphFont}
         ${TableNormal}
         ${NoList}
+        ${ListParagraph}
 
         ${Title}
         ${TitleChar}
@@ -1752,6 +2076,8 @@ function setWord(zip, xml) {
         ${Strong}
         ${Quote}
         ${QuoteChar}
+        ${Hyperlink}
+        ${GridTable1Light}
 
     </w:styles>`
 
@@ -2077,3 +2403,15 @@ function setWord(zip, xml) {
     word.folder('theme').file('theme1.xml', theme1XML)
     word.file("webSettings.xml", webSettingsXML);
 }
+function escapeXml(unsafe) {
+    return unsafe.replace(/[<>&"']/g, function (c) {
+      switch (c) {
+        case '<': return '&lt;';
+        case '>': return '&gt;';
+        case '&': return '&amp;';
+        case '"': return '&quot;';
+        case "'": return '&apos;';
+      }
+    });
+  }
+  
