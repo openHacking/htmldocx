@@ -4,7 +4,6 @@
  */
 
 // 导入jszip库
-import { escapeXML } from 'ejs';
 import JSZip from 'jszip';
 
 
@@ -20,57 +19,36 @@ export class GenerateDocx {
 
     init(){
 
-        // 解析 HTML 字符串为 DOM 对象
+    // 解析 HTML 字符串为 DOM 对象
     const parser = new DOMParser();
     const doc = parser.parseFromString(this.html, "text/html");
 
     // 创建一个新的JSZip实例
-    const zip = new JSZip();
+    const zip = this.zip = new JSZip();
 
       let xml = ``;
       
     for (const node of doc.body.childNodes) {
         xml += this.traverse(node);
     }
-
-    // <w:br/><w:t xml:space="preserve">                  c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON payload"})</w:t><w:br/><w:t xml:space="preserve">                  return</w:t><w:br/><w:t xml:space="preserve">              }</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">              // Handle the event based on its type</w:t><w:br/><w:t xml:space="preserve">              switch event.Type {</w:t><w:br/><w:t xml:space="preserve">              case "test":</w:t><w:br/><w:t xml:space="preserve">                  fmt.Println("Received test event")</w:t><w:br/><w:t xml:space="preserve">              default:</w:t><w:br/><w:t xml:space="preserve">                  fmt.Println("Received unknown event type:", event.Type)</w:t><w:br/><w:t xml:space="preserve">              }</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">              // Send a 2xx response status code to indicate success</w:t><w:br/><w:t xml:space="preserve">              c.JSON(http.StatusOK, gin.H{})</w:t><w:br/><w:t xml:space="preserve">          })</w:t><w:br/><w:t xml:space="preserve">blank</w:t><w:br/><w:t xml:space="preserve">          // Start the server</w:t><w:br/><w:t xml:space="preserve">          if err := router.Run(":8080"); err != nil {</w:t><w:br/><w:t xml:space="preserve">              panic(err)</w:t><w:br/><w:t xml:space="preserve">          }</w:t><w:br/><w:t xml:space="preserve">      }</w:t><w:br/><w:t xml:space="preserve">blank</w:t>
-    console.info('xml-===', xml)
-    //   return
-
     // 将构建的xml字符串添加到JSZip实例中
     setContentTypes(zip)
     setRels(zip)
     setCustomXml(zip)
     setDocProps(zip)
     setWord(zip, xml,this.hyperlinkXML)
-
-
-    // 将生成的docx文件下载到本地
-    zip.generateAsync({ type: 'blob' }).then(function (content) {
-        const a = document.createElement('a');
-        const url = URL.createObjectURL(content);
-        a.href = url;
-        a.download = 'docx-template.docx';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function () {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
-    });
-
     }
 
-    traverse(node) {
+    traverse(node,setting) {
         // 处理文本节点
-        if (node.nodeType === Node.TEXT_NODE || node.nodeName === "LI") {
+        if (node.nodeType === Node.TEXT_NODE) {
             return node.textContent.trim() === '' ? '' : `<w:r><w:t>${node.textContent}</w:t></w:r>`;
         }
     
-        // 处理加粗标签
+        // 处理加粗标签，行内代码
         else if (
             node.nodeType === Node.ELEMENT_NODE &&
-            (node.nodeName === "STRONG" || node.nodeName === "B")
+            (node.nodeName === "STRONG" || node.nodeName === "B" || node.nodeName === "CODE")
         ) {
             let childrenXml = "";
             for (const child of node.childNodes) {
@@ -96,7 +74,9 @@ export class GenerateDocx {
             for (const child of node.childNodes) {
                 childrenXml += this.traverse(child);
             }
-            return `<w:p>${childrenXml}</w:p>`;
+
+            // 引用中用到了P。，但是不需要用<w:p>包裹
+            return setting && setting.isRemoveP ? childrenXml :`<w:p>${childrenXml}</w:p>`;
         }
         // 处理链接标签
         else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "A") {
@@ -126,46 +106,74 @@ export class GenerateDocx {
             return `<w:p><w:pPr><w:pStyle w:val="Heading${headingLevel}" /></w:pPr>${childrenXml}</w:p>`;
         }
     
-        // 处理无序列表标签
-        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "UL") {
+        // 处理无序列表、有序列表标签
+        else if (node.nodeType === Node.ELEMENT_NODE && (node.nodeName === "UL" || node.nodeName === "OL")) {
             let childrenXml = "";
             const childNodes = Array.from(node.childNodes).filter(n => n.nodeName === 'LI')
-            for (const child of childNodes) {   
+
+            let numId = node.nodeName === "UL" ? 5 : 6;
+            let listLevel = 0;
+            // 嵌套的列表，识别到0,1,2...就要递增等级
+            if(setting && (setting.listLevel || setting.listLevel === 0)){
+                listLevel++
+            }
+            for (const child of childNodes) {
                 childrenXml += `<w:p><w:pPr>
                 <w:pStyle w:val="ListParagraph"/>
                 <w:numPr>
-                    <w:ilvl w:val="0"/>
-                    <w:numId w:val="5"/>
+                    <w:ilvl w:val="${listLevel}"/>
+                    <w:numId w:val="${numId}"/>
                 </w:numPr>
                 <w:ind w:firstLineChars="0"/>
             </w:pPr>${this.traverse(child)}</w:p>`;
             }
             return childrenXml;
+        }
+
+        // 处理文本节点
+        if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "LI") {
+                return `<w:r><w:t>${node.textContent}</w:t></w:r>`;
         }
     
-        // 处理有序列表标签
-        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "OL") {
-            let childrenXml = "";
-            const childNodes = Array.from(node.childNodes).filter(n => n.nodeName === 'LI')
-            for (const child of childNodes) {   
-                childrenXml += `<w:p><w:pPr>
-                <w:pStyle w:val="ListParagraph"/>
-                <w:numPr>
-                    <w:ilvl w:val="0"/>
-                    <w:numId w:val="6"/>
-                </w:numPr>
-                <w:ind w:firstLineChars="0"/>
-            </w:pPr>${this.traverse(child)}</w:p>`;
-            }
-            return childrenXml;
-        }
-        // 处理有代码块标签
+    
+    
+        // 处理代码块标签
         else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "PRE") {
-            // const t = `第1行&#10;第2行&#10;第3行&#10;第4行`
+            const languageXml = `<w:t>${node.firstChild.firstChild.innerText}</w:t><w:br/>`;
+            const codeXml = node.firstChild.lastChild.innerText.split('\n').map(str => `<w:t xml:space="preserve">${escapeXml(str)}</w:t>`).join('<w:br/>')
+            return `<w:p><w:r>${languageXml}${codeXml}</w:r></w:p>`
+        }
+        // 处理分割线标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "HR") {
+            return `<w:p>
+            <w:pPr>
+                <w:pBdr>
+                    <w:bottom w:val="single" w:sz="6" w:space="1" w:color="auto"/>
+                </w:pBdr>
+            </w:pPr>
+            <w:r>
+                <w:lastRenderedPageBreak/>
+            </w:r>
+        </w:p>`
+        }
+        // 处理引用标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "BLOCKQUOTE") {
+            let childrenXml = "";
+            for (const child of node.childNodes) {
+                childrenXml += this.traverse(child,{isRemoveP:true});
+            }
 
-            let childrenXml = node.innerText.split('\n').map(str => `<w:t xml:space="preserve">${escapeXML(str)}</w:t>`).join('<w:br/>')
-            return `<w:p><w:r>${childrenXml}</w:r></w:p>`
-            // return `<w:p><w:r><w:t xml:space="preserve">${node.innerText.replace(/\n/g, '&#10;')}</w:t></w:r></w:p>`
+            return `<w:p>
+            <w:pPr>
+                <w:pStyle w:val="Quote"/>
+                <w:jc w:val="left"/>
+            </w:pPr>
+            ${childrenXml}
+        </w:p>`
+        }
+        // 处理表格标签
+        else if (node.nodeType === Node.ELEMENT_NODE && node.nodeName === "TABLE") {
+            return parseTable(node)
         }
     
         // 处理其他标签
@@ -173,10 +181,91 @@ export class GenerateDocx {
     
         return "";
     }
+
+    save(name = 'docx-template'){
+        // 将生成的docx文件下载到本地
+        this.zip.generateAsync({ type: 'blob' }).then(function (content) {
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(content);
+            a.href = url;
+            a.download = name + '.docx';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(function () {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 0);
+        });
+    }
     
 }
 
+// 解析表格
+const parseTable = (table) => {
+    let xml = '';
+    // 解析表头
+    const headerCells = table.querySelectorAll('thead tr th');
+    const bodyRows = table.querySelectorAll('tbody tr');
+    let headerXml = '<w:tr>';
+    for (let i = 0; i < headerCells.length; i++) {
+      headerXml += createHeaderCell(headerCells[i].innerText.trim());
+    }
+    headerXml += '</w:tr>';
 
+    let bodyXml = '';
+    for (let i = 0; i < bodyRows.length; i++) { 
+        bodyXml += '<w:tr>';
+        const bodyCells = bodyRows[i].querySelectorAll('td')
+        for (let j = 0; j < bodyCells.length; j++) {
+            bodyXml += createBodyCell(bodyCells[j].innerText.trim());
+        }
+        bodyXml += '</w:tr>';
+    }
+
+    xml = `<w:tbl> <w:tblPr> <w:tblStyle w:val="GridTable1Light"/> <w:tblW w:w="0" w:type="auto"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr> <w:tblGrid> <w:gridCol w:w="2226"/> <w:gridCol w:w="2226"/> <w:gridCol w:w="2226"/> </w:tblGrid> ${headerXml} ${bodyXml}</w:tbl>`
+
+    return xml
+}
+
+// 创建表头单元格
+const createHeaderCell = (text) => {
+    const cell = `
+      <w:tc>
+        <w:tcPr>
+          <w:tcW w:w="0" w:type="auto"/>
+          <w:shd w:val="clear" w:color="auto"/>
+        </w:tcPr>
+        <w:p>
+          <w:r>
+            <w:rPr>
+              <w:b/>
+            </w:rPr>
+            <w:t>${text}</w:t>
+          </w:r>
+        </w:p>
+      </w:tc>
+    `;
+    return cell;
+  };
+  
+  // 创建表体单元格
+  const createBodyCell = (text) => {
+    const cell = `
+      <w:tc>
+        <w:tcPr>
+          <w:tcW w:w="0" w:type="auto"/>
+          <w:shd w:val="clear" w:color="auto"/>
+        </w:tcPr>
+        <w:p>
+          <w:r>
+            <w:t>${text}</w:t>
+          </w:r>
+        </w:p>
+      </w:tc>
+    `;
+    return cell;
+  };
+  
 
 function setContentTypes(zip) {
     // 构建docx所需的xml字符串
@@ -2403,6 +2492,7 @@ function setWord(zip, xml,hyperlinkXML) {
     word.folder('theme').file('theme1.xml', theme1XML)
     word.file("webSettings.xml", webSettingsXML);
 }
+
 function escapeXml(unsafe) {
     return unsafe.replace(/[<>&"']/g, function (c) {
       switch (c) {
