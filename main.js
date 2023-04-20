@@ -16,9 +16,12 @@ document.querySelector('#btn-save').addEventListener('click',()=>{
 })
 
 document.querySelector('#btn-save-gpt').addEventListener('click',()=>{
-  const g = new GenerateDocx(htmlString2.innerHTML)
+  const g = new GenerateDocx()
+  g.addHTML(htmlString2.innerHTML)
+  g.setXml()
   g.save()
 })
+
 document.querySelector('#btn-save-gpt-docx').addEventListener('click',()=>{
   docx({DOM:htmlString2})
 })

@@ -9,34 +9,35 @@ import JSZip from 'jszip';
 
 // 生成docx文件的函数
 export class GenerateDocx {
-    constructor(html){
-        this.html = html;
+    constructor(){
 
         this.hyperlinkXML = ``;
         this.hyperlinkId = 8;
-        this.init()
+        this.zip = new JSZip();
+        this.documentXmlBody = ''
     }
 
-    init(){
+    addHTML(html){
 
-    // 解析 HTML 字符串为 DOM 对象
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(this.html, "text/html");
-
-    // 创建一个新的JSZip实例
-    const zip = this.zip = new JSZip();
-
-      let xml = ``;
+      // 解析 HTML 字符串为 DOM 对象
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
       
-    for (const node of doc.body.childNodes) {
-        xml += this.traverse(node);
+      for (const node of doc.body.childNodes) {
+        this.documentXmlBody += this.traverse(node);
+      }
+    
     }
-    // 将构建的xml字符串添加到JSZip实例中
-    setContentTypes(zip)
-    setRels(zip)
-    setCustomXml(zip)
-    setDocProps(zip)
-    setWord(zip, xml,this.hyperlinkXML)
+
+    setXml(){
+        // 创建一个新的JSZip实例
+        const zip = this.zip
+        // 将构建的xml字符串添加到JSZip实例中
+        setContentTypes(zip)
+        setRels(zip)
+        setCustomXml(zip)
+        setDocProps(zip)
+        setWord(zip, this.documentXmlBody,this.hyperlinkXML)
     }
 
     traverse(node,setting) {
@@ -390,7 +391,7 @@ function setDocProps(zip,
   </cp:coreProperties>`);
 }
 
-function setWord(zip, xml,hyperlinkXML) {
+function setWord(zip, xml,hyperlinkXML = '') {
     const wordRelsXML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
     <Relationships
         xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
